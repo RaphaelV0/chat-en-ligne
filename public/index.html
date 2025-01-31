@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+
+<body>
+    <h1>BONJOUR !</h1>
+    <h2>Utilisateurs connectés :</h2>
+    <ul id="user"></ul>
+    
+    <p id="typing"></p> <!-- Indicateur de saisie -->
+
+    <form id="form">
+        <input type="text" id="inputMessage" placeholder="Écrivez un message..." required>
+        <button type="submit">Envoyer</button>
+    </form>
+    <ul id="messages"></ul>
+</body>
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script>
+    const socket = io();
+
+    // Demande du pseudo
+    var username = prompt("Quel est votre nom ?");
+    if (!username || username.trim() === "") {
+        username = `User${Math.floor(Math.random() * 1000)}`;
+    }
+
+    // Envoie du pseudo au serveur
+    socket.emit('new user', username);
+
+    // Gestion de l'envoi des messages
+    document.getElementById('form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const input = document.getElementById('inputMessage');
+        const message = input.value.trim();
+
+        if (message !== "") {
+            socket.emit('message', { user: username, message: message });
+            input.value = "";
+        }
+    });
+
+    // Indicateur "Quelqu'un est en train d'écrire..."
+    document.getElementById('inputMessage').addEventListener('input', () => {
+        socket.emit('typing', username);
+    });
+
+    // Affichage du message
+    socket.on("messageRecu", function (msg) {
+        const messagesUl = document.getElementById("messages");
+        const li = document.createElement('li');
+        li.textContent = `${msg.user} : ${msg.message}`;
+        messagesUl.appendChild(li);
+    });
+
+    // Mise à jour de la liste des utilisateurs connectés
+    socket.on('update users', function (users) {
+        const userUl = document.getElementById("user");
+        userUl.innerHTML = ""; // On vide la liste avant de la remplir
+
+        users.forEach(function (val) {
+            const li = document.createElement('li');
+            li.textContent = val;
+            userUl.appendChild(li);
+        });
+    });
+
+    // Affichage de l'indicateur de saisie
+    socket.on("typing", function (user) {
+        const typingIndicator = document.getElementById("typing");
+        typingIndicator.textContent = `${user} est en train d'écrire...`;
+
+        setTimeout(() => {
+            typingIndicator.textContent = "";
+        }, 3000);
+    });
+
+</script>
+
+</html>
