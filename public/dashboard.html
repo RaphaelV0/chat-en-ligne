@@ -1,0 +1,110 @@
+    <!DOCTYPE html>
+    <html lang="fr">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard Chat</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+
+            .container {
+                display: flex;
+                justify-content: space-between;
+                padding: 20px;
+            }
+
+            .stats, .users {
+                width: 45%;
+                background-color: #fff;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+
+            .stats h3, .users h3 {
+                margin-bottom: 10px;
+                color: #333;
+            }
+
+            #userList {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            #userList li {
+                padding: 8px;
+                background-color: #e0e0e0;
+                margin: 5px 0;
+                border-radius: 4px;
+            }
+
+            #typingIndicator {
+                font-style: italic;
+                color: #555;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="container">
+            <!-- Statistiques -->
+            <div class="stats">
+                <h3>Statistiques du Chat</h3>
+                <p>👥 Utilisateurs en ligne : <span id="onlineUsersCount">0</span></p>
+                <p>💬 Messages envoyés : <span id="messageCount">0</span></p>
+                <p>📩 Messages privés : <span id="privateMessagesCount">0</span></p>
+                <p>🗑️ Messages supprimés : <span id="deletedMessagesCount">0</span></p>
+            </div>
+
+            <!-- Liste des utilisateurs -->
+            <div class="users">
+                <h3>Utilisateurs Connectés</h3>
+                <ul id="userList">
+                    <!-- Liste des utilisateurs sera mise à jour dynamiquement -->
+                </ul>
+                <p id="typingIndicator"></p>
+            </div>
+        </div>
+
+        <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+        <script>
+            const socket = io();
+
+            // Mise à jour des statistiques et des utilisateurs connectés
+            socket.on('update dashboard', (data) => {
+                document.getElementById('onlineUsersCount').textContent = data.onlineUsers;
+                document.getElementById('messageCount').textContent = data.totalMessages;
+                document.getElementById('privateMessagesCount').textContent = data.privateMessages;
+                document.getElementById('deletedMessagesCount').textContent = data.deletedMessages;
+
+                // Mise à jour de la liste des utilisateurs
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';  
+                data.users.forEach((user) => {
+                    const li = document.createElement('li');
+                    li.textContent = user;
+                    userList.appendChild(li);
+                });
+            });
+
+            // Affichage d'un indicateur quand quelqu'un écrit
+            socket.on("typing", ({ user }) => {
+                const typingIndicator = document.getElementById("typingIndicator");
+                typingIndicator.textContent = `${user} est en train d'écrire...`;
+
+                setTimeout(() => {
+                    typingIndicator.textContent = "";
+                }, 3000);
+            });
+        </script>
+    </body>
+
+    </html>

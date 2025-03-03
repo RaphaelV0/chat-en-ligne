@@ -1,86 +1,121 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
-</head>
-
-<body>
-    <h1>BONJOUR !</h1>
-    <h2>Utilisateurs connectés :</h2>
-    <ul id="user"></ul>
-    
-    <p id="typing"></p> <!-- Indicateur de saisie -->
-
-    <form id="form">
-        <input type="text" id="inputMessage" placeholder="Écrivez un message..." required>
-        <button type="submit">Envoyer</button>
-    </form>
-    <ul id="messages"></ul>
-</body>
-
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-<script>
-    const socket = io();
-
-    // Demande du pseudo
-    var username = prompt("Quel est votre nom ?");
-    if (!username || username.trim() === "") {
-        username = `User${Math.floor(Math.random() * 1000)}`;
-    }
-
-    // Envoie du pseudo au serveur
-    socket.emit('new user', username);
-
-    // Gestion de l'envoi des messages
-    document.getElementById('form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const input = document.getElementById('inputMessage');
-        const message = input.value.trim();
-
-        if (message !== "") {
-            socket.emit('message', { user: username, message: message });
-            input.value = "";
+    <title>Chat avec Salons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
         }
-    });
 
-    // Indicateur "Quelqu'un est en train d'écrire..."
-    document.getElementById('inputMessage').addEventListener('input', () => {
-        socket.emit('typing', username);
-    });
+        h1, h2 {
+            color: #333;
+        }
 
-    // Affichage du message
-    socket.on("messageRecu", function (msg) {
-        const messagesUl = document.getElementById("messages");
-        const li = document.createElement('li');
-        li.textContent = `${msg.user} : ${msg.message}`;
-        messagesUl.appendChild(li);
-    });
+        #roomSelection, #chatContainer {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
 
-    // Mise à jour de la liste des utilisateurs connectés
-    socket.on('update users', function (users) {
-        const userUl = document.getElementById("user");
-        userUl.innerHTML = ""; // On vide la liste avant de la remplir
+        #createRoomForm input {
+            padding: 5px;
+            margin-right: 10px;
+            width: 200px;
+        }
 
-        users.forEach(function (val) {
-            const li = document.createElement('li');
-            li.textContent = val;
-            userUl.appendChild(li);
-        });
-    });
+        #messages {
+            list-style-type: none;
+            padding: 0;
+        }
 
-    // Affichage de l'indicateur de saisie
-    socket.on("typing", function (user) {
-        const typingIndicator = document.getElementById("typing");
-        typingIndicator.textContent = `${user} est en train d'écrire...`;
+        #messages li {
+            padding: 10px;
+            background-color: #e0e0e0;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
 
-        setTimeout(() => {
-            typingIndicator.textContent = "";
-        }, 3000);
-    });
+        #user li {
+            padding: 5px;
+            background-color: #f0f0f0;
+            margin: 3px 0;
+            border-radius: 4px;
+        }
 
-</script>
+        #typing {
+            font-style: italic;
+            color: #555;
+        }
 
+        /* Style pour les notifications */
+        #notifications {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            max-width: 300px;
+            z-index: 1000;
+        }
+
+        .notification {
+            background-color: #444;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .notification-info {
+            background-color: #4caf50;
+        }
+
+        .notification-error {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <a href="/dashboard">Accéder au Dashboard</a>
+    <h1>Bienvenue sur le Chat</h1>
+
+    <!-- Section pour la sélection de salons et la création d'un nouveau salon -->
+    <div id="roomSelection">
+        <h2>Salons disponibles :</h2>
+        <ul id="roomsList"></ul>
+
+        <h3>Créer un nouveau salon :</h3>
+        <form id="createRoomForm">
+            <input type="text" id="newRoomName" placeholder="Nom du salon" required>
+            <button type="submit">Créer</button>
+        </form>
+    </div>
+
+    <!-- Section de chat active quand l'utilisateur rejoint un salon -->
+    <div id="chatContainer" style="display: none;">
+        <h2>Salon : <span id="currentRoom">Général</span></h2>
+        <h3>Utilisateurs connectés :</h3>
+        <ul id="user"></ul>
+
+        <p id="typing"></p> <!-- Indicateur de saisie -->
+
+        <form id="form">
+            <input type="text" id="inputMessage" placeholder="Écrivez un message..." required>
+            <button type="submit">Envoyer</button>
+        </form>
+        <ul id="messages"></ul>
+    </div>
+
+    <!-- Conteneur des notifications -->
+    <div id="notifications"></div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="chat.js"></script>
+</body>
 </html>
