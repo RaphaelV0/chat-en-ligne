@@ -9,7 +9,7 @@ if (!username || username.trim() === "") {
 // Envoi du pseudo au serveur
 socket.emit('new user', username);
 
-// Affichage des salons
+// Mise à jour des salons
 socket.on("update rooms", function (rooms) {
     const roomsUl = document.getElementById("roomsList");
     roomsUl.innerHTML = "";
@@ -143,3 +143,43 @@ socket.on('notification', function (message) {
         notifications.removeChild(notification);
     }, 5000);
 });
+
+// Mise à jour du Dashboard avec les informations sur les utilisateurs et salons
+socket.on('update dashboard', (data) => {
+    // Mise à jour des statistiques
+    document.getElementById('onlineUsersCount').textContent = data.onlineUsers;
+    document.getElementById('messageCount').textContent = data.totalMessages;
+    document.getElementById('privateMessagesCount').textContent = data.privateMessages;
+    document.getElementById('deletedMessagesCount').textContent = data.deletedMessages;
+
+    // Mise à jour de la liste des utilisateurs avec la durée de connexion
+    const userList = document.getElementById('userList');
+    userList.innerHTML = '';  
+    data.users.forEach((user) => {
+        const li = document.createElement('li');
+        li.textContent = `${user.username} (Connecté depuis: ${formatDuration(user.connectionDuration)})`;
+        li.addEventListener('click', () => {
+            window.location.href = `/user-stats/${user.username}`; // Accès aux stats utilisateur spécifique
+        });
+        userList.appendChild(li);
+    });
+
+    // Mise à jour de la liste des salons avec la durée de vie
+    const roomList = document.getElementById('roomList');
+    roomList.innerHTML = '';  
+    data.rooms.forEach((room) => {
+        const li = document.createElement('li');
+        li.textContent = `${room.roomName} (Durée de vie: ${formatDuration(room.roomDuration)})`;
+        li.addEventListener('click', () => {
+            window.location.href = `/room-stats/${room.roomName}`; // Accès aux stats salon spécifique
+        });
+        roomList.appendChild(li);
+    });
+});
+
+// Formatage de la durée en format lisible (minutes et secondes)
+function formatDuration(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+}

@@ -5,79 +5,269 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat avec Salons</title>
     <style>
+        /* Global Styles */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Dégradé élégant */
+            color: #f8f8f8;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background 0.5s ease;
         }
 
-        h1, h2 {
-            color: #333;
-        }
-
-        #roomSelection, #chatContainer {
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+        a {
+            text-decoration: none;
+            color: #f8f8f8;
+            font-size: 1.2em;
+            font-weight: bold;
             margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease;
         }
 
+        a:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Heading Styles */
+        h1 {
+            font-size: 3.5em;
+            color: #f8f8f8;
+            text-align: center;
+            text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        h2, h3 {
+            font-size: 1.8em;
+            color: #f8f8f8;
+        }
+
+        /* Room and Chat Section */
+        #roomSelection, #chatContainer {
+            background-color: rgba(34, 34, 34, 0.85); /* Fond sombre élégant */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 20px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        #roomSelection:hover, #chatContainer:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Room List */
+        #roomsList {
+            list-style-type: none;
+            padding: 0;
+            margin: 15px 0;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        #roomsList li {
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: #333;
+            font-size: 1.1em;
+            color: #f8f8f8;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        #roomsList li:hover {
+            background-color: #2575fc; /* Bleu clair élégant au survol */
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Room Create Form */
         #createRoomForm input {
-            padding: 5px;
-            margin-right: 10px;
-            width: 200px;
+            padding: 12px 20px;
+            width: 70%;
+            font-size: 1.1em;
+            border: 2px solid #2575fc;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #f8f8f8;
         }
 
+        #createRoomForm input:focus {
+            border-color: #6a11cb; /* Accent couleur au focus */
+        }
+
+        #createRoomForm button {
+            padding: 12px 20px;
+            border: none;
+            background-color: #2575fc;
+            color: white;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #createRoomForm button:hover {
+            background-color: #6a11cb;
+        }
+
+        /* Chat Messages */
         #messages {
             list-style-type: none;
             padding: 0;
+            margin-top: 15px;
         }
 
         #messages li {
-            padding: 10px;
-            background-color: #e0e0e0;
-            margin: 5px 0;
-            border-radius: 4px;
+            padding: 15px;
+            background-color: #424242;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
         }
 
-        #user li {
-            padding: 5px;
-            background-color: #f0f0f0;
-            margin: 3px 0;
-            border-radius: 4px;
+        #messages li:hover {
+            background-color: #2575fc;
+            color: white;
+            transform: scale(1.03);
         }
 
+        /* Typing indicator */
         #typing {
             font-style: italic;
-            color: #555;
+            color: #aaa;
         }
 
-        /* Style pour les notifications */
+        /* User List */
+        #user li {
+            padding: 10px;
+            background-color: #333;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: background 0.3s ease;
+            color: #f8f8f8;
+        }
+
+        #user li:hover {
+            background-color: #2575fc;
+            color: white;
+        }
+
+        /* Notification Styles */
         #notifications {
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 20px;
+            right: 20px;
             max-width: 300px;
             z-index: 1000;
         }
 
         .notification {
-            background-color: #444;
+            background-color: #333;
             color: white;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
             font-size: 14px;
-            transition: all 0.3s ease-in-out;
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         .notification-info {
-            background-color: #4caf50;
+            background-color: #2575fc;
         }
 
         .notification-error {
-            background-color: #f44336;
+            background-color: #e53935;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Chat Form */
+        #form {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        #inputMessage {
+            padding: 12px 20px;
+            width: 80%;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: 2px solid #2575fc;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #f8f8f8;
+        }
+
+        #inputMessage:focus {
+            border-color: #6a11cb;
+        }
+
+        #form button {
+            padding: 12px 20px;
+            background-color: #2575fc;
+            color: white;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        #form button:hover {
+            background-color: #6a11cb;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            #roomSelection, #chatContainer {
+                width: 100%;
+                padding: 15px;
+            }
+
+            #createRoomForm input {
+                width: 60%;
+            }
+
+            #createRoomForm button {
+                width: 35%;
+            }
+
+            #form {
+                flex-direction: column;
+            }
+
+            #inputMessage {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            #form button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -88,7 +278,9 @@
     <!-- Section pour la sélection de salons et la création d'un nouveau salon -->
     <div id="roomSelection">
         <h2>Salons disponibles :</h2>
-        <ul id="roomsList"></ul>
+        <ul id="roomsList">
+            <!-- Liste des salons sera remplie ici -->
+        </ul>
 
         <h3>Créer un nouveau salon :</h3>
         <form id="createRoomForm">
@@ -101,7 +293,9 @@
     <div id="chatContainer" style="display: none;">
         <h2>Salon : <span id="currentRoom">Général</span></h2>
         <h3>Utilisateurs connectés :</h3>
-        <ul id="user"></ul>
+        <ul id="user">
+            <!-- Liste des utilisateurs sera remplie ici -->
+        </ul>
 
         <p id="typing"></p> <!-- Indicateur de saisie -->
 
@@ -109,7 +303,9 @@
             <input type="text" id="inputMessage" placeholder="Écrivez un message..." required>
             <button type="submit">Envoyer</button>
         </form>
-        <ul id="messages"></ul>
+        <ul id="messages">
+            <!-- Messages seront affichés ici -->
+        </ul>
     </div>
 
     <!-- Conteneur des notifications -->
