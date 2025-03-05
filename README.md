@@ -1,7 +1,7 @@
 # Chat en Temps Réel
 
 ## 📌 Description
-Ce projet est une application de chat en temps réel utilisant **Node.js**, **Express**, et **Socket.io**. Les utilisateurs peuvent envoyer des messages publics ou privés et voir en temps réel qui est connecté.
+Ce projet est une application de chat en temps réel utilisant **Node.js**, **Express**, et **Socket.io**. Les utilisateurs peuvent envoyer des messages publics ou privés, voir en temps réel qui est connecté et interagir avec les autres utilisateurs. L'application offre également un tableau de bord avec des statistiques sur les utilisateurs et les salons de discussion.
 
 ---
 
@@ -24,6 +24,16 @@ Ce projet est une application de chat en temps réel utilisant **Node.js**, **Ex
 ### 🚪 **Déconnexion automatique**
 - Lorsqu'un utilisateur quitte la page, il est automatiquement supprimé de la liste des utilisateurs connectés.
 
+### 📊 **Tableau de bord**
+- Statistiques sur les utilisateurs en ligne, le nombre de messages envoyés, le nombre de messages privés envoyés et le nombre de messages supprimés.
+
+### 🗑️ **Suppression de messages**
+- Les utilisateurs peuvent supprimer leurs propres messages, et ceux-ci sont supprimés en temps réel pour tous les utilisateurs.
+
+### 🏠 **Gestion des salons**
+- Les utilisateurs peuvent créer et rejoindre des salons de discussion.
+- Les salons sont dynamiquement créés ou supprimés.
+
 ---
 
 ## 🚀 Améliorations Possibles
@@ -43,9 +53,6 @@ Ce projet est une application de chat en temps réel utilisant **Node.js**, **Ex
 
 ### 😃 **5. Émojis et Réactions**
 - Ajouter la possibilité d'insérer des emojis et de réagir aux messages.
-
-### 🎨 **6. Mode Sombre / Mode Clair**
-- Ajouter un bouton pour basculer entre le mode clair et le mode sombre.
 
 ### ⚠️ **7. Anti-Spam & Filtrage des messages**
 - Empêcher les messages trop fréquents (anti-flood).
@@ -70,22 +77,14 @@ cd chat-app
 
 # Installer les dépendances
 npm install
+
 ```
 
-### ▶️ **Lancer le serveur**
+### ▶️ Lancer le serveur
+
 ```bash
 node server.js
 ```
-
-Puis ouvrir **http://localhost:8000** dans un navigateur.
-
----
-
-## 📜 Licence
-Ce projet est sous licence MIT. Tu peux l'utiliser, le modifier et le partager librement.
+Puis ouvrir http://localhost:8000 dans un navigateur.
 
 ---
-
-## 🙌 Contribuer
-Si tu veux améliorer ce projet, n'hésite pas à **faire un fork** et proposer des ajouts via une **pull request** ! 🚀
-
