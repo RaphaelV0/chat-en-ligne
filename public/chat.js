@@ -74,6 +74,7 @@ socket.on("messageRecu", function (msg) {
     
     if (msg.message.startsWith("(privé)")) {
         li.style.backgroundColor = "#f0f8ff"; // Couleur de fond différente pour les messages privés
+        li.style.color = "#000"; // Texte noir pour assurer la lisibilité du message privé
         li.textContent = `${msg.user} (Privé) : ${msg.message.substring(7)}`; // Enlever le préfixe "(privé)"
     } else {
         li.textContent = `${msg.user} : ${msg.message}`;
